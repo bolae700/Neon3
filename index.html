@@ -1,0 +1,633 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pola's Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #101010;
+            --surface: #1C1C1C;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --accent-solid: #D4AF37; /* Gold */
+            --accent-gradient: linear-gradient(90deg, #E6C653, #D4AF37);
+            --spotlight-color: rgba(212, 175, 55, 0.1);
+            --transition-fast: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            --transition-medium: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: default;
+        }
+        
+        /* --- Preloader --- */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--surface);
+            border-top-color: var(--accent-solid);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        body.is-loaded .preloader {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* --- Dynamic Background --- */
+        .spotlight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--spotlight-color) 0%, rgba(212, 175, 55, 0) 60%);
+            pointer-events: none;
+            z-index: 0;
+            will-change: transform;
+            transition: transform 0.1s linear;
+        }
+        .sparkle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .sparkle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1); }
+        }
+        
+        @media (pointer: coarse) {
+            .spotlight { display: none; }
+        }
+        
+        /* --- Main Structure --- */
+        .portfolio-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.8s ease 0.2s;
+        }
+        body.is-loaded .portfolio-container {
+            opacity: 1;
+        }
+
+        .main-header {
+            width: 100%;
+            padding: 70px 2rem 2rem 2rem; /* Lowered from top */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 2rem;
+            background: rgba(28, 28, 28, 0.7); /* Optimized background */
+            padding: 0.5rem 1.5rem;
+            border-radius: 99px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3); /* Softer glow */
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition-fast);
+            padding: 0.5rem 0;
+            position: relative;
+            opacity: 0.6;
+        }
+
+        .nav-button:hover, .nav-button.active {
+            color: var(--text-primary);
+            opacity: 1;
+        }
+        
+        .nav-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-gradient);
+        }
+
+        .content-area {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem 2rem 2rem;
+        }
+        
+        /* --- Content Panels --- */
+        .content-panel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
+            padding: 1rem;
+        }
+
+        .content-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Home Panel */
+        #home { gap: 1.5rem; }
+        .profile-pic {
+            width: clamp(120px, 20vw, 180px);
+            height: clamp(120px, 20vw, 180px);
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--surface);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        .name { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 700; }
+        .verse { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-secondary); max-width: 600px; line-height: 1.8; }
+        .social-links { display: flex; gap: 2rem; margin-top: 1rem; }
+        .social-links a { color: var(--text-secondary); transition: var(--transition-fast); opacity: 0.6; }
+        .social-links a:hover { color: var(--text-primary); opacity: 1; transform: scale(1.1); }
+        .social-links svg { width: 32px; height: 32px; }
+
+        /* Generic Panel Structure */
+        .panel-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Music Panel */
+        #music .panel-container { gap: 2rem; }
+        .music-player {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .now-playing { display: flex; align-items: center; gap: 1.5rem; }
+        .album-art { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .track-info { flex-grow: 1; text-align: left; }
+        .track-title { font-size: 1.2rem; font-weight: 600; }
+        .track-artist { color: var(--text-secondary); }
+        .progress-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 3px; cursor: pointer; margin-top: 1rem; }
+        .progress-bar { width: 0; height: 100%; background: var(--accent-gradient); border-radius: 3px; }
+        .controls { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; flex-shrink: 0; }
+        .control-button { color: var(--text-secondary); background: none; border: none; cursor: pointer; opacity: 0.7; transition: var(--transition-fast); }
+        .control-button:hover { opacity: 1; color: var(--text-primary); }
+        .play-pause-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--accent-gradient); color: var(--bg); display: flex; align-items: center; justify-content: center; opacity: 1; }
+        
+        .playlist { flex-grow: 1; overflow-y: auto; text-align: left; padding-right: 1rem; }
+        .playlist-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-radius: 12px; cursor: pointer; transition: var(--transition-fast); border: 1px solid transparent; }
+        .playlist-item:hover { background-color: rgba(255,255,255,0.05); }
+        .playlist-item.active { background-color: transparent; border-color: var(--accent-solid); color: var(--accent-solid); }
+        .playlist-item.active .item-artist, .playlist-item.active .playlist-item-index { color: var(--accent-solid); opacity: 0.8; }
+        .playlist-item-index { color: var(--text-secondary); font-size: 0.9rem; }
+        .item-title { font-weight: 500; }
+        .item-artist { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Gallery Panel */
+        .gallery-grid {
+            width: 100%;
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        .gallery-item { border-radius: 12px; overflow: hidden; cursor: pointer; opacity: 0.7; transition: var(--transition-medium); }
+        .gallery-item:hover { transform: scale(1.05); opacity: 1; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Clock Panel */
+        .time { font-size: clamp(5rem, 22vw, 12rem); font-weight: 700; line-height: 1; }
+        .date { font-size: clamp(1rem, 4vw, 1.5rem); color: var(--text-secondary); }
+
+        /* Lightbox */
+        .lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--transition-medium); }
+        .lightbox.visible { opacity: 1; visibility: visible; }
+        .lightbox img { max-width: 90%; max-height: 90%; border-radius: 16px; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--surface); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-solid); border-radius: 4px; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header { padding: 50px 1rem 1rem 1rem; }
+            .content-area { padding: 1rem; }
+            .section-title { text-align: center; }
+            #music .panel-container { gap: 1rem; }
+            .now-playing { flex-direction: column; text-align: center; }
+            .track-info { text-align: center; }
+            .controls { justify-content: center; margin-top: 1rem; }
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="preloader"><div class="spinner"></div></div>
+    
+    <div class="spotlight"></div>
+    <div class="sparkle-container"></div>
+
+    <main class="portfolio-container">
+        <header class="main-header">
+            <nav class="main-nav">
+                <button class="nav-button active" data-section="home" aria-label="Home">Home</button>
+                <button class="nav-button" data-section="music" aria-label="Music">Music</button>
+                <button class="nav-button" data-section="gallery" aria-label="Gallery">Gallery</button>
+                <button class="nav-button" data-section="clock" aria-label="Clock">Clock</button>
+            </nav>
+        </header>
+
+        <div class="content-area">
+            <div id="home" class="content-panel active">
+                <img src="https://xatimg.com/image/rWDHtSw2pqG2.jpg" alt="Pola" class="profile-pic">
+                <h1 class="name">Pola</h1>
+                <p class="verse">"But those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint." (Isaiah 40:31)</p>
+                <div class="social-links">
+                    <a href="https://github.com/bolae700" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297 24 5.67 18.627 0 12 0z"/></svg></a>
+                    <a href="https://www.youtube.com/@SoundSurge3" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+                </div>
+            </div>
+
+            <div id="music" class="content-panel">
+                 <div class="panel-container">
+                    <h2 class="section-title">Music Player</h2>
+                    <div class="music-player">
+                        <div class="now-playing">
+                            <img src="https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" alt="Album Art" class="album-art">
+                            <div class="track-info">
+                                <h3 class="track-title">Select a Song</h3>
+                                <p class="track-artist">-</p>
+                                <div class="progress-container"><div class="progress-bar"></div></div>
+                            </div>
+                            <div class="controls">
+                                 <button class="control-button" id="prev-btn" aria-label="Previous Track"><svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg></button>
+                                 <button class="control-button play-pause-btn" id="play-pause-btn" aria-label="Play">
+                                    <span id="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+                                    <span id="pause-icon" style="display: none;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></span>
+                                </button>
+                                <button class="control-button" id="next-btn" aria-label="Next Track"><svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="playlist"></div>
+                 </div>
+            </div>
+
+            <div id="gallery" class="content-panel">
+                <div class="panel-container">
+                    <h2 class="section-title">Gallery</h2>
+                    <div class="gallery-grid"></div>
+                </div>
+            </div>
+
+            <div id="clock" class="content-panel">
+                <div class="time">12:00</div>
+                <div class="date">Wednesday, July 17, 2024</div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="lightbox">
+        <img src="" alt="Enlarged gallery image">
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+        const App = {
+            state: {
+                activeSection: 'home',
+                currentTrackIndex: 0,
+                isPlaying: false,
+                spotlight: { x: 0, y: 0, targetX: 0, targetY: 0 },
+            },
+            elements: {},
+            constants: {
+                tracks: [
+                    { url: "https://audio.jukehost.co.uk/16F3ncIKS16sa5AciCMrGmuJa9doyvDX", title: "Zkryat", artist: "George Wassouf", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                    { url: "https://audio.jukehost.co.uk/HN649ig7AsLZ1vaS9mdsGPl8q0uI8z7m", title: "Lw Batlna Nehlm Nemoot", artist: "Mohamed Mounir", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                    { url: "https://audio.jukehost.co.uk/JS0eUrxeITe69kdu4uQtHcyXORFirvM3", title: "Fakrak Ya Nasiny", artist: "Mohamed Fouad", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                    { url: "https://audio.jukehost.co.uk/kwvKuE1GOiFiyJB9r2qgbSdCEwNYicoY", title: "Shed Eldafaer", artist: "Hanan Madi", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                    { url: "https://audio.jukehost.co.uk/nR6XjZwYTEh3Y5tzwS3NwKZrazhE0qGz", title: "Rabak Lama Yered", artist: "Mohamed Mounir", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                    { url: "https://audio.jukehost.co.uk/LTTXfGln1F0s2pQpHLgb0JapbBOxUpGn", title: "Khosara", artist: "Mohamed Fouad", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" }, 
+                    { url: "https://audio.jukehost.co.uk/f9oiefTzRGZvp6iyMJKGbxLe3ZFCv390", title: "Sed El-Habayeb", artist: "Shadia", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" }, 
+                    { url: "https://audio.jukehost.co.uk/l2Mk2abKCcRGWpSoxSlcxBL80RAjYvMe", title: "Fagaa Eftarana", artist: "Tamer Hosny", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" }, 
+                ],
+                images: [
+                    "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg",
+                    "https://i.ibb.co/Jyq80hX/bfa64e7da2612eb344663aa3fbcf2f59.png",
+                    "https://i.ibb.co/dDVSRPD/ss.png",
+                    "https://xatimg.com/image/rWDHtSw2pqG2.jpg",
+                ]
+            },
+
+            init() {
+                this.cacheDOMElements();
+                this.handlePreloading();
+                this.bindEvents();
+                this.renderGallery();
+                this.renderPlaylist();
+                this.loadTrack(this.state.currentTrackIndex);
+                this.startClock();
+                this.startSpotlight();
+                this.createSparkles(50);
+            },
+            
+            handlePreloading() {
+                window.addEventListener('load', () => {
+                    this.elements.preloader.style.opacity = '0';
+                    document.body.classList.add('is-loaded');
+                    setTimeout(() => {
+                        this.elements.preloader.style.display = 'none';
+                    }, 500);
+                });
+            },
+
+            cacheDOMElements() {
+                this.elements.preloader = document.querySelector('.preloader');
+                this.elements.spotlight = document.querySelector('.spotlight');
+                this.elements.sparkleContainer = document.querySelector('.sparkle-container');
+                this.elements.navButtons = document.querySelectorAll('.nav-button');
+                this.elements.contentPanels = document.querySelectorAll('.content-panel');
+                this.elements.timeEl = document.querySelector('.time');
+                this.elements.dateEl = document.querySelector('.date');
+                this.elements.galleryGrid = document.querySelector('.gallery-grid');
+                this.elements.lightbox = document.querySelector('.lightbox');
+                this.elements.lightboxImg = document.querySelector('.lightbox img');
+                this.elements.audioPlayer = document.getElementById('audio-player');
+                this.elements.playPauseBtn = document.getElementById('play-pause-btn');
+                this.elements.playIcon = document.getElementById('play-icon');
+                this.elements.pauseIcon = document.getElementById('pause-icon');
+                this.elements.nextBtn = document.getElementById('next-btn');
+                this.elements.prevBtn = document.getElementById('prev-btn');
+                this.elements.progressBar = document.querySelector('.progress-bar');
+                this.elements.progressContainer = document.querySelector('.progress-container');
+                this.elements.trackTitleEl = document.querySelector('.track-title');
+                this.elements.trackArtistEl = document.querySelector('.track-artist');
+                this.elements.albumArtEl = document.querySelector('.album-art');
+                this.elements.playlistEl = document.querySelector('.playlist');
+            },
+
+            bindEvents() {
+                document.addEventListener('mousemove', e => {
+                    this.state.spotlight.targetX = e.clientX;
+                    this.state.spotlight.targetY = e.clientY;
+                });
+                
+                this.elements.navButtons.forEach(button => {
+                    button.addEventListener('click', () => this.switchSection(button.dataset.section));
+                });
+                
+                this.elements.lightbox.addEventListener('click', () => this.hideLightbox());
+                this.elements.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+                this.elements.nextBtn.addEventListener('click', () => this.playNextTrack());
+                this.elements.prevBtn.addEventListener('click', () => this.playPrevTrack());
+                this.elements.audioPlayer.addEventListener('timeupdate', () => this.updateMusicProgress());
+                this.elements.audioPlayer.addEventListener('ended', () => this.playNextTrack());
+                this.elements.progressContainer.addEventListener('click', (e) => this.seek(e));
+            },
+
+            startSpotlight() {
+                const update = () => {
+                    const { x, y, targetX, targetY } = this.state.spotlight;
+                    const newX = x + (targetX - x) * 0.1;
+                    const newY = y + (targetY - y) * 0.1;
+                    
+                    this.state.spotlight.x = newX;
+                    this.state.spotlight.y = newY;
+
+                    this.elements.spotlight.style.transform = `translate(${newX - 250}px, ${newY - 250}px)`;
+                    requestAnimationFrame(update);
+                };
+                requestAnimationFrame(update);
+            },
+            
+            createSparkles(count) {
+                for (let i = 0; i < count; i++) {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.top = `${Math.random() * 100}%`;
+                    sparkle.style.left = `${Math.random() * 100}%`;
+                    sparkle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                    sparkle.style.animationDelay = `${Math.random() * 3}s`;
+                    this.elements.sparkleContainer.appendChild(sparkle);
+                }
+            },
+            
+            switchSection(sectionId) {
+                if (sectionId === this.state.activeSection) return;
+                
+                this.state.activeSection = sectionId;
+
+                this.elements.navButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.section === sectionId);
+                });
+                
+                this.elements.contentPanels.forEach(panel => {
+                    panel.classList.toggle('active', panel.id === sectionId);
+                });
+            },
+
+            startClock() {
+                this.updateClock();
+                setInterval(() => this.updateClock(), 1000);
+            },
+            
+            updateClock() {
+                const now = new Date();
+                this.elements.timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+                this.elements.dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            },
+
+            renderGallery() {
+                this.constants.images.forEach(src => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `<img src="${src}" alt="Gallery image" loading="lazy">`;
+                    item.addEventListener('click', () => this.showLightbox(src));
+                    this.elements.galleryGrid.appendChild(item);
+                });
+            },
+
+            showLightbox(src) {
+                this.elements.lightboxImg.src = src;
+                this.elements.lightbox.classList.add('visible');
+            },
+
+            hideLightbox() {
+                this.elements.lightbox.classList.remove('visible');
+            },
+            
+            loadTrack(index) {
+                const track = this.constants.tracks[index];
+                this.elements.audioPlayer.src = track.url;
+                this.elements.trackTitleEl.textContent = track.title;
+                this.elements.trackArtistEl.textContent = track.artist;
+                this.elements.albumArtEl.src = track.art;
+                this.renderPlaylist(); 
+            },
+            
+            togglePlayPause() {
+                this.state.isPlaying ? this.pauseTrack() : this.playTrack();
+            },
+
+            playTrack() {
+                this.state.isPlaying = true;
+                this.elements.audioPlayer.play().catch(e => console.error("Audio playback failed:", e));
+                this.elements.playIcon.style.display = 'none';
+                this.elements.pauseIcon.style.display = 'block';
+            },
+
+            pauseTrack() {
+                this.state.isPlaying = false;
+                this.elements.audioPlayer.pause();
+                this.elements.playIcon.style.display = 'block';
+                this.elements.pauseIcon.style.display = 'none';
+            },
+            
+            playNextTrack() {
+                this.state.currentTrackIndex = (this.state.currentTrackIndex + 1) % this.constants.tracks.length;
+                this.loadTrack(this.state.currentTrackIndex);
+                if (this.state.isPlaying) this.playTrack();
+            },
+
+            playPrevTrack() {
+                this.state.currentTrackIndex = (this.state.currentTrackIndex - 1 + this.constants.tracks.length) % this.constants.tracks.length;
+                this.loadTrack(this.state.currentTrackIndex);
+                if (this.state.isPlaying) this.playTrack();
+            },
+
+            updateMusicProgress() {
+                const { duration, currentTime } = this.elements.audioPlayer;
+                const progressPercent = (currentTime / duration) * 100;
+                this.elements.progressBar.style.width = `${progressPercent || 0}%`;
+            },
+            
+            seek(e) {
+                const width = this.elements.progressContainer.clientWidth;
+                const clickX = e.offsetX;
+                const duration = this.elements.audioPlayer.duration;
+                if(duration) {
+                  this.elements.audioPlayer.currentTime = (clickX / width) * duration;
+                }
+            },
+            
+            renderPlaylist() {
+                 this.elements.playlistEl.innerHTML = '';
+                 this.constants.tracks.forEach((track, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'playlist-item';
+                    if (index === this.state.currentTrackIndex) {
+                        item.classList.add('active');
+                    }
+                    item.innerHTML = `
+                        <span class="playlist-item-index">${(index + 1).toString().padStart(2, '0')}</span>
+                        <div>
+                            <div class="item-title">${track.title}</div>
+                            <div class="item-artist">${track.artist}</div>
+                        </div>
+                    `;
+                    item.addEventListener('click', () => {
+                        this.state.currentTrackIndex = index;
+                        this.loadTrack(index);
+                        this.playTrack();
+                    });
+                    this.elements.playlistEl.appendChild(item);
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => App.init());
+    </script>
+</body>
+</html>
