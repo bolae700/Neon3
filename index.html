@@ -1,947 +1,449 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="ltr">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pola's Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>POLA — Sovereign By Grace</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pola-bg': '#0C0C0C',
+                        'pola-text': '#FFFFFF',
+                        'pola-text-muted': '#888888',
+                        'pola-accent': '#FF0A2F',
+                        'pola-surface': '#1A1A1A',
+                        'pola-border': '#333333',
+                    },
+                    fontFamily: {
+                        'display': ['Archivo Black', 'sans-serif'],
+                        'body': ['Inter', 'sans-serif'],
+                    },
+                    transitionTimingFunction: {
+                        'pola-ease': 'cubic-bezier(0.83, 0, 0.17, 1)',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg: #050505;
-            --text: #FAFAFA;
-            --text-muted: #666666;
-            --accent: #00FF7F; /* Spring Green */
-            --surface: #111111;
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            cursor: none;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
         }
         
-        body.is-loaded {
-            opacity: 1;
-        }
-
-        body *, body {
-            cursor: none;
-        }
-
         ::selection {
-            background-color: var(--accent);
-            color: var(--bg);
+            background-color: #FF0A2F;
+            color: #0C0C0C;
         }
         
-        /* --- Preloader --- */
-        .preloader {
-            position: fixed;
+        .custom-scrollbar::-webkit-scrollbar { 
+            width: 4px; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb { 
+            background: #FF0A2F; 
+            border-radius: 0; 
+        }
+        .custom-scrollbar { 
+            scrollbar-width: thin; 
+            scrollbar-color: #FF0A2F transparent; 
+        }
+
+        /* Page transition base styles */
+        .page {
+            position: absolute;
             inset: 0;
-            background-color: var(--bg);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .preloader-indicator {
-            width: 8px;
-            height: 50px;
-            background-color: var(--accent);
-            animation: pulse 1.2s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
-            50% { transform: scaleY(1); opacity: 1; }
-        }
-
-        /* --- Custom Cursor --- */
-        .custom-cursor-dot, .custom-cursor-outline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
-        }
-        .custom-cursor-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent);
-        }
-        .custom-cursor-outline {
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--accent);
-            transition: transform 0.1s ease-out;
-        }
-
-        /* --- Custom Scrollbar --- */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--surface); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-
-        /* --- Main Layout --- */
-        .portfolio-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .main-header {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 4rem;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            z-index: 50;
-            border-top: 1px solid var(--border);
-            background-color: var(--bg);
-        }
-
-        .header-name {
-            writing-mode: horizontal-tb;
-            transform: none;
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-        }
-
-        .main-nav ul {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 1.5rem;
-            list-style: none;
-        }
-
-        .nav-item { position: relative; }
-
-        .nav-button {
-            font-size: 0.875rem; /* 14px */
-            font-weight: 700;
-            color: var(--text-muted);
-            background: none;
-            border: none;
-            transition: color 0.3s;
-        }
-
-        .nav-button:hover { color: var(--text); }
-        .nav-button.active { color: var(--text); }
-
-        .nav-indicator {
-            position: absolute;
-            left: 50%;
-            top: -1rem;
-            transform: translateX(-50%);
-            height: 0.5rem; /* 8px */
-            width: 0.5rem; /* 8px */
-            border-radius: 9999px;
-            background-color: var(--accent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-button.active + .nav-indicator { opacity: 1; }
-
-        .main-content {
-            position: relative;
-            flex-grow: 1;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            padding-bottom: 4rem; /* Space for bottom nav */
-        }
-
-        /* --- Content Panels --- */
-        .content-panel {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out, visibility 0.7s;
-            transform: translateY(20px);
+            transition: transform 0.7s cubic-bezier(0.83, 0, 0.17, 1), opacity 0.7s cubic-bezier(0.83, 0, 0.17, 1);
         }
 
-        .content-panel.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        /* Keyframes for animations */
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-
-        /* --- Home Panel --- */
-        #home-panel .home-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-            width: 100%;
+        .animate-fade-in {
+            animation: fade-in 0.3s ease;
         }
-        #home-panel .home-title {
-            font-size: clamp(4rem, 20vw, 22rem);
-            font-weight: 700;
-            letter-spacing: -0.05em;
-            text-transform: uppercase;
-            line-height: 0.85;
-        }
-        #home-panel .verse-container {
-            max-width: 24rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            align-self: flex-start;
-            margin-top: 2rem;
-        }
-        #home-panel .verse-text {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            line-height: 1.6;
-        }
-        #home-panel .social-links {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        #home-panel .social-link {
-            color: var(--text-muted);
-            transition: color 0.3s;
-        }
-        #home-panel .social-link:hover { color: var(--accent); }
-        #home-panel .social-link svg {
-            height: 1.5rem;
-            width: 1.5rem;
-        }
-
-
-        /* --- Music Panel (Desktop) --- */
-        #music-panel .music-container-desktop {
-            display: none; /* Hidden on mobile by default */
-        }
-        #music-panel .player-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            text-align: center;
-        }
-        #music-panel .album-art {
-            width: 100%;
-            max-width: 24rem;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-        }
-        #music-panel .player-controls-container {
-             width: 100%;
-             max-width: 24rem;
-             margin-top: 1.5rem;
-        }
-        #music-panel .player-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 1.5rem;
-        }
-        #music-panel .control-button {
-            color: var(--text-muted);
-            transition: color 0.3s;
-            background: none;
-            border: none;
-        }
-        #music-panel .control-button:hover { color: var(--text); }
-        #music-panel .play-pause-btn {
-            width: 4rem; height: 4rem;
-            display: flex; align-items: center; justify-content: center;
-            background-color: var(--accent);
-            color: var(--bg);
-            border-radius: 9999px;
-        }
-        #music-panel .progress-container {
-            height: 4px;
-            background-color: var(--surface);
-            width: 100%;
-            cursor: pointer;
-            margin-top: 1rem;
-        }
-        #music-panel .progress-bar {
-            height: 100%;
-            background-color: var(--accent);
-        }
-        #music-panel .playlist-container {
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        #music-panel .playlist {
-            list-style-type: none;
-        }
-        #music-panel .playlist-item {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1.25rem 1rem;
-            border-bottom: 1px solid var(--border);
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
-        #music-panel .playlist-item:hover { background-color: rgba(255, 255, 255, 0.05); }
-        #music-panel .playlist-item.active { background-color: var(--surface); }
-        #music-panel .playlist-index {
-            font-family: monospace;
-            font-size: 1.125rem;
-            color: var(--text-muted);
-        }
-        #music-panel .playlist-item.active .playlist-index { color: var(--accent); }
-
-
-        /* --- Music Panel (Mobile - Redesigned) --- */
-        #music-panel .music-container-mobile {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            gap: 1.5rem;
-        }
-
-        #music-panel .player-bar-mobile {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-shrink: 0;
-            position: relative;
-            padding-bottom: 1rem; /* Space for progress bar */
-            border-bottom: 1px solid var(--border);
-        }
-
-        #music-panel .player-bar-mobile .album-art {
-            width: 56px;
-            height: 56px;
-            flex-shrink: 0;
-            object-fit: cover;
-        }
-
-        #music-panel .player-bar-mobile .track-info-mobile {
-            flex-grow: 1;
-            min-width: 0; /* Prevents text from pushing controls */
-        }
-        
-        #music-panel .player-bar-mobile #track-title-mobile {
-            font-size: 1rem;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        #music-panel .player-bar-mobile #track-artist-mobile {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        #music-panel .player-bar-mobile .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 0;
-        }
-
-        #music-panel .player-bar-mobile .play-pause-btn {
-            width: 2.75rem;
-            height: 2.75rem;
-        }
-        
-        #music-panel .player-bar-mobile .play-pause-btn svg {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-        
-        #music-panel .player-bar-mobile .control-button svg {
-            width: 1.25rem;
-            height: 1.25rem;
-        }
-
-        #music-panel .progress-container-mobile {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background-color: var(--surface);
-            cursor: pointer;
-        }
-        
-        #music-panel .progress-container-mobile .progress-bar {
-            height: 100%;
-            background-color: var(--accent);
-        }
-
-        #music-panel .music-container-mobile .playlist-container {
-            flex-grow: 1;
-            min-height: 0; /* Allows container to shrink and scroll */
-        }
-
-        /* --- Gallery Panel --- */
-        #gallery-panel .gallery-container { height: 100%; overflow-y: auto; }
-        #gallery-panel .gallery-grid {
-            column-count: 2;
-            column-gap: 1rem;
-        }
-        #gallery-panel .gallery-item {
-            margin-bottom: 1rem;
-            break-inside: avoid;
-            cursor: pointer;
-        }
-        #gallery-panel .gallery-item img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            transition: filter 0.3s;
-        }
-        #gallery-panel .gallery-item:hover img { filter: brightness(1.1); }
-        
-        /* Lightbox */
-        .lightbox {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .lightbox.visible { opacity: 1; visibility: visible; }
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            cursor: default;
-        }
-
-        /* --- Clock Panel --- */
-        #clock-panel .clock-time {
-            font-size: clamp(5rem, 30vw, 30rem);
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -0.05em;
-            font-family: monospace;
-        }
-        #clock-panel .clock-date {
-            font-size: clamp(0.875rem, 2vw, 1.5rem);
-            color: var(--text-muted);
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            margin-top: 1rem;
-        }
-
-        /* --- Responsive Design --- */
-        @media (min-width: 768px) {
-            .main-header { padding: 0 4rem; }
-            .content-panel { padding: 4rem; }
-            #home-panel .verse-container { align-self: flex-end; margin-top: -2rem; margin-right: 5rem; }
-            #home-panel .verse-text { font-size: 1rem; }
-
-            /* Show desktop music player, hide mobile */
-            #music-panel .music-container-desktop { 
-                display: grid;
-                grid-template-columns: 1fr 2fr; 
-                grid-template-rows: 1fr;
-                gap: 4rem; 
-                height: 100%;
-                max-height: 85vh;
-            }
-             #music-panel .music-container-mobile {
-                display: none;
-            }
-
-            #music-panel .music-container-desktop .playlist-container { 
-                border-top: none; 
-                border-left: 1px solid var(--border); 
-                padding-top: 0; 
-                padding-left: 2rem; 
-            }
-            
-            #gallery-panel .gallery-grid { column-count: 3; }
-        }
-
-        @media (min-width: 1024px) {
-            #home-panel .verse-container { margin-right: 10rem; }
-            #gallery-panel .gallery-grid { column-count: 4; }
-        }
-
     </style>
 </head>
-<body>
+<body class="bg-pola-bg text-pola-text font-body overflow-hidden">
 
-    <div class="preloader">
-        <div class="preloader-indicator"></div>
+    <div id="loading-screen" class="fixed inset-0 bg-pola-bg z-50 flex items-center justify-center transition-opacity duration-500">
+        <svg class="animate-spin h-10 w-10 text-pola-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
     </div>
-    
-    <div class="custom-cursor-dot"></div>
-    <div class="custom-cursor-outline"></div>
 
-    <div class="portfolio-container">
-        
-        <main class="main-content">
-            <!-- Home Panel -->
-            <section id="home-panel" class="content-panel active">
-                <div class="home-container">
-                    <h1 class="home-title">POLA</h1>
-                    <div class="verse-container">
-                        <p class="verse-text">"But those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint." (Isaiah 40:31)</p>
-                        <div class="social-links">
-                            <a href="https://github.com/bolae700" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
-                                <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297 24 5.67 18.627 0 12 0z"/></svg>
-                            </a>
-                            <a href="https://www.youtube.com/@SoundSurge3" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link">
-                                <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Music Panel -->
-            <section id="music-panel" class="content-panel">
-                 <div class="music-container-desktop">
-                    <div class="player-wrapper">
-                        <div>
-                            <img id="album-art" src="" alt="Album Art" class="album-art" />
-                        </div>
-                        <div class="player-controls-container">
-                            <h2 id="track-title" style="font-size: 1.875rem; font-weight: 700;"></h2>
-                            <p id="track-artist" style="color: var(--text-muted); margin-top: 0.25rem;"></p>
-                            <div class="progress-container">
-                                <div id="progress-bar" class="progress-bar"></div>
-                            </div>
-                            <div class="player-controls">
-                                <button id="prev-btn" class="control-button" aria-label="Previous Track"><svg style="width: 1.75rem; height: 1.75rem;" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6L9.5 12L18 18V6ZM8 6H6V18H8V6Z" /></svg></button>
-                                <button id="play-pause-btn" class="play-pause-btn" aria-label="Play/Pause">
-                                    <svg id="play-icon" style="width: 2rem; height: 2rem;" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12L8 5Z" /></svg>
-                                    <svg id="pause-icon" style="width: 2rem; height: 2rem; display: none;" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" /></svg>
-                                </button>
-                                <button id="next-btn" class="control-button" aria-label="Next Track"><svg style="width: 1.75rem; height: 1.75rem;" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18L14.5 12L6 6V18ZM16 6V18H18V6H16Z" /></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="playlist-container">
-                        <ul id="playlist" class="playlist"></ul>
-                    </div>
-                 </div>
-
-                 <div class="music-container-mobile">
-                    <div class="player-bar-mobile">
-                        <img id="album-art-mobile" src="" alt="Album Art" class="album-art" />
-                        <div class="track-info-mobile">
-                            <h2 id="track-title-mobile"></h2>
-                            <p id="track-artist-mobile"></p>
-                        </div>
-                        <div class="player-controls">
-                            <button id="prev-btn-mobile" class="control-button" aria-label="Previous Track"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 6L9.5 12L18 18V6ZM8 6H6V18H8V6Z" /></svg></button>
-                            <button id="play-pause-btn-mobile" class="play-pause-btn" aria-label="Play/Pause">
-                                <svg id="play-icon-mobile" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12L8 5Z" /></svg>
-                                <svg id="pause-icon-mobile" style="display: none;" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" /></svg>
-                            </button>
-                            <button id="next-btn-mobile" class="control-button" aria-label="Next Track"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18L14.5 12L6 6V18ZM16 6V18H18V6H16Z" /></svg></button>
-                        </div>
-                        <div class="progress-container-mobile">
-                            <div id="progress-bar-mobile" class="progress-bar"></div>
-                        </div>
-                    </div>
-                    <div class="playlist-container">
-                        <ul id="playlist-mobile" class="playlist"></ul>
-                    </div>
-                 </div>
-            </section>
-
-            <!-- Gallery Panel -->
-            <section id="gallery-panel" class="content-panel">
-                <div class="gallery-container">
-                    <div id="gallery-grid" class="gallery-grid"></div>
-                </div>
-            </section>
-
-            <!-- Clock Panel -->
-            <section id="clock-panel" class="content-panel" style="align-items: center; text-align: center;">
-                 <div id="clock-time" class="clock-time">00:00</div>
-                 <div id="clock-date" class="clock-date"></div>
-            </section>
-        </main>
-
-        <header class="main-header">
-            <div class="header-name">POLA</div>
-            <nav class="main-nav">
-                <ul>
-                    <li class="nav-item">
-                        <button class="nav-button active" data-section="home" aria-label="Home">00</button>
-                        <div class="nav-indicator"></div>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-button" data-section="music" aria-label="Music">01</button>
-                        <div class="nav-indicator"></div>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-button" data-section="gallery" aria-label="Gallery">02</button>
-                        <div class="nav-indicator"></div>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-button" data-section="clock" aria-label="Clock">03</button>
-                        <div class="nav-indicator"></div>
-                    </li>
-                </ul>
-            </nav>
-            <div></div> <!-- Spacer for justify-between -->
+    <main id="app-container" class="h-screen w-screen flex flex-col overflow-hidden opacity-0 transition-opacity duration-500">
+        <header class="flex-shrink-0 h-16 flex items-center px-6 border-b border-pola-border z-20 bg-pola-bg">
+            <h1 class="font-display text-2xl tracking-widest text-pola-text">POLA<span class="text-pola-accent">.</span></h1>
         </header>
+
+        <div class="flex-grow relative">
+            
+            <!-- Media Page -->
+            <div id="page-media" data-view="media" class="page">
+                <div class="h-full w-full flex items-center justify-center p-4 sm:p-6 custom-scrollbar overflow-y-auto">
+                    <div class="w-full max-w-2xl mx-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <!-- Music Player Component -->
+                            <div class="bg-pola-surface p-6 rounded-xl flex flex-col items-center text-center">
+                                <img id="player-album-art" src="" alt="Album Art" class="w-28 h-28 object-cover rounded-lg mb-4 shadow-lg" />
+                                <div class="w-full min-w-0">
+                                    <h3 id="player-track-title" class="text-lg font-bold truncate"></h3>
+                                    <p id="player-track-artist" class="text-sm text-pola-text-muted"></p>
+                                </div>
+                                <div id="player-progress-container" class="w-full my-4 cursor-pointer group">
+                                    <div class="h-1 bg-pola-border rounded-full">
+                                        <div id="player-progress-bar" class="h-full bg-pola-accent rounded-full" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center gap-2">
+                                    <button id="player-prev-btn" aria-label="Previous Track" class="p-2 text-pola-text-muted transition hover:text-pola-text hover:scale-110">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M6 18V6h2v12H6zm3.5-6L18 6v12l-8.5-6z" /></svg>
+                                    </button>
+                                    <button id="player-play-pause-btn" aria-label="Play or Pause" class="w-12 h-12 bg-pola-accent rounded-full flex items-center justify-center text-pola-bg transition hover:scale-110">
+                                        <svg id="player-play-icon" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M8 5v14l11-7L8 5z" /></svg>
+                                        <svg id="player-pause-icon" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+                                    </button>
+                                    <button id="player-next-btn" aria-label="Next Track" class="p-2 text-pola-text-muted transition hover:text-pola-text hover:scale-110">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M16 18v-12h2v12h-2zm-4.5-6L3 18V6l8.5 6z" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Clock Component -->
+                            <div class="bg-pola-surface p-6 rounded-xl flex flex-col items-center justify-center text-center">
+                                <div id="clock-time" class="font-display text-5xl sm:text-6xl leading-none">00:00</div>
+                                <div id="clock-date" class="mt-2 text-xs text-pola-text-muted uppercase tracking-widest">LOADING...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Page -->
+            <div id="page-home" data-view="home" class="page">
+                <div class="h-full w-full flex items-center justify-center p-6 custom-scrollbar overflow-y-auto">
+                    <div class="text-center flex flex-col items-center">
+                        <h1 class="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-none">
+                            SOVEREIGN<br /><span class="text-pola-accent">BY GRACE</span>
+                        </h1>
+                        <p class="text-base sm:text-lg text-pola-text-muted mt-6 max-w-sm sm:max-w-md">
+                            Dominion is not seized, but granted. Forged in faith, executed with authority.
+                        </p>
+                        <div class="mt-8 text-left inline-block">
+                            <p class="pl-6 border-l-2 border-pola-accent italic max-w-md">
+                                "I can do all things through Christ who gives me strength."
+                                <br />— Philippians 4:13
+                            </p>
+                        </div>
+                        <div class="flex gap-6 mt-10">
+                            <a href="https://github.com/bolae700" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="text-pola-text-muted transition-colors duration-300 hover:text-pola-accent">
+                                <svg role="img" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297 24 5.67 18.627 0 12 0z" /></svg>
+                            </a>
+                            <a href="https://www.youtube.com/@SoundSurge3" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="text-pola-text-muted transition-colors duration-300 hover:text-pola-accent">
+                                <svg role="img" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Page -->
+            <div id="page-gallery" data-view="gallery" class="page">
+                <div class="h-full w-full flex flex-col p-4 sm:p-6 pb-24">
+                    <div class="w-full text-center mb-6">
+                        <h2 class="font-display text-4xl sm:text-5xl text-pola-text">GALLERY</h2>
+                    </div>
+                    <div class="flex-grow w-full bg-pola-surface rounded-xl p-4 custom-scrollbar overflow-y-auto">
+                        <div id="gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <!-- Images will be injected here by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav id="bottom-nav" class="flex-shrink-0 h-20 w-full bg-pola-bg border-t border-pola-border flex justify-around items-center z-30">
+            <button data-view="media" class="nav-btn relative transition-colors duration-300 text-sm font-bold uppercase tracking-wider p-4 text-pola-text-muted hover:text-pola-text">
+                Media
+                <span class="nav-indicator absolute top-0 left-1/2 -translate-x-1/2 h-1 w-6 bg-pola-accent rounded-full transition-opacity duration-300 opacity-0"></span>
+            </button>
+            <button data-view="home" class="nav-btn relative transition-colors duration-300 text-sm font-bold uppercase tracking-wider p-4 text-pola-text-muted hover:text-pola-text">
+                Home
+                <span class="nav-indicator absolute top-0 left-1/2 -translate-x-1/2 h-1 w-6 bg-pola-accent rounded-full transition-opacity duration-300 opacity-0"></span>
+            </button>
+            <button data-view="gallery" class="nav-btn relative transition-colors duration-300 text-sm font-bold uppercase tracking-wider p-4 text-pola-text-muted hover:text-pola-text">
+                Gallery
+                <span class="nav-indicator absolute top-0 left-1/2 -translate-x-1/2 h-1 w-6 bg-pola-accent rounded-full transition-opacity duration-300 opacity-0"></span>
+            </button>
+        </nav>
+    </main>
+
+    <div id="lightbox" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 cursor-pointer hidden">
+        <img id="lightbox-img" src="" alt="Enlarged view" class="max-w-full max-h-full rounded-lg shadow-2xl object-contain cursor-default"/>
     </div>
 
-    <div class="lightbox">
-        <img src="" alt="Enlarged view">
-    </div>
-
-    <audio id="audio-player"></audio>
+    <audio id="audio-player" preload="metadata"></audio>
 
     <script>
-    const App = {
-        state: {
-            activeSection: 'home',
-            currentTrackIndex: 0,
-            isPlaying: false,
-            cursor: { x: 0, y: 0 },
-            isHovering: false,
-        },
-        elements: {},
-        constants: {
-            tracks: [
-                { url: "https://audio.jukehost.co.uk/16F3ncIKS16sa5AciCMrGmuJa9doyvDX", title: "Zkryat", artist: "George Wassouf", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
-                { url: "https://audio.jukehost.co.uk/ZMdqQGMsbyecTHRWVUm8lCkKT0em4z6X", title: "Ana Masry", artist: "Nancy Ajram", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb330d815b76751.jpg" },
-                { url: "https://audio.jukehost.co.uk/kwvKuE1GOiFiyJB9r2qgbSdCEwNYicoY", title: "Shed Eldafaer", artist: "Hanan Madi", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb330d815b76751.jpg" },
-                { url: "https://audio.jukehost.co.uk/NuLgFpCxa1HTsUQUUVhWtBDQJ76xsQwz", title: "Seket Leih", artist: "Ramy Sabry", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb330d815b76751.jpg" },
-            ],
-            images: [
-                "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg",
-                "https://i.ibb.co/Jyq80hX/bfa64e7da2612eb344663aa3fbcf2f59.png",
-                "https://i.ibb.co/dDVSRPD/ss.png",
-                "https://xatimg.com/image/rWDHtSw2pqG2.jpg",
-                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop",
-                "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=800&auto=format&fit=crop",
-                "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=800&auto=format&fit=crop",
-                "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop",
-            ],
-        },
+    document.addEventListener('DOMContentLoaded', () => {
+        const PolaApp = {
+            // --- STATE & CONSTANTS ---
+            state: {
+                activeView: 'home',
+                currentTrackIndex: 0,
+                isPlaying: false,
+                isSeeking: false,
+            },
+            constants: {
+                tracks: [
+                    { url: "https://audio.jukehost.co.uk/16F3ncIKS16sa5AciCMrGmuJa9doyvDX", title: "Zkryat", artist: "George Wassouf", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                    { url: "https://audio.jukehost.co.uk/kwvKuE1GOiFiyJB9r2qgbSdCEwNYicoY", title: "Shed Eldafaer", artist: "Hanan Madi", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                    { url: "https://audio.jukehost.co.uk/NuLgFpCxa1HTsUQUUVhWtBDQJ76xsQwz", title: "Seket Leih", artist: "Ramy Sabry", art: "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg" },
+                ],
+                images: [
+                    "https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1581338834647-b0fb40704e21?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1552058544-f2b08422138a?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop", "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop",
+                ],
+                defaultArt: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=800&auto=format&fit=crop",
+                viewOrder: { media: 0, home: 1, gallery: 2 },
+            },
+            elements: {},
 
-        init() {
-            this.cacheDOMElements();
-            this.bindEvents();
-            
-            this.renderGallery();
-            this.renderPlaylist();
-            this.loadTrack(this.state.currentTrackIndex);
-            
-            this.startClock();
-            this.startCursor();
-            this.handlePreloading();
-        },
-        
-        handlePreloading() {
-            const preloader = document.querySelector('.preloader');
-            preloader.style.opacity = '0';
-            document.body.classList.add('is-loaded');
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 500);
-        },
+            // --- INITIALIZATION ---
+            init() {
+                this.cacheDOMElements();
+                this.bindEvents();
+                this.renderGallery();
+                this.startClock();
+                this.loadTrack(this.state.currentTrackIndex, false);
+                this.updateView(this.state.activeView, true);
 
-        cacheDOMElements() {
-            this.elements = {
-                cursorDot: document.querySelector('.custom-cursor-dot'),
-                cursorOutline: document.querySelector('.custom-cursor-outline'),
-                navButtons: document.querySelectorAll('.nav-button'),
-                contentPanels: document.querySelectorAll('.content-panel'),
-                audioPlayer: document.getElementById('audio-player'),
-                
-                // Desktop Music Player
-                playPauseBtn: document.getElementById('play-pause-btn'),
-                playIcon: document.getElementById('play-icon'),
-                pauseIcon: document.getElementById('pause-icon'),
-                nextBtn: document.getElementById('next-btn'),
-                prevBtn: document.getElementById('prev-btn'),
-                progressBar: document.getElementById('progress-bar'),
-                progressContainer: document.querySelector('.music-container-desktop .progress-container'),
-                trackTitle: document.getElementById('track-title'),
-                trackArtist: document.getElementById('track-artist'),
-                albumArt: document.getElementById('album-art'),
-                playlist: document.getElementById('playlist'),
+                setTimeout(() => {
+                    this.elements.loadingScreen.style.opacity = '0';
+                    this.elements.loadingScreen.style.pointerEvents = 'none';
+                    this.elements.appContainer.style.opacity = '1';
+                }, 500);
+            },
 
-                // Mobile Music Player
-                playPauseBtnMobile: document.getElementById('play-pause-btn-mobile'),
-                playIconMobile: document.getElementById('play-icon-mobile'),
-                pauseIconMobile: document.getElementById('pause-icon-mobile'),
-                nextBtnMobile: document.getElementById('next-btn-mobile'),
-                prevBtnMobile: document.getElementById('prev-btn-mobile'),
-                progressBarMobile: document.getElementById('progress-bar-mobile'),
-                progressContainerMobile: document.querySelector('.progress-container-mobile'),
-                trackTitleMobile: document.getElementById('track-title-mobile'),
-                trackArtistMobile: document.getElementById('track-artist-mobile'),
-                albumArtMobile: document.getElementById('album-art-mobile'),
-                playlistMobile: document.getElementById('playlist-mobile'),
+            cacheDOMElements() {
+                this.elements = {
+                    loadingScreen: document.getElementById('loading-screen'),
+                    appContainer: document.getElementById('app-container'),
+                    pages: document.querySelectorAll('.page'),
+                    navButtons: document.querySelectorAll('.nav-btn'),
+                    // Clock
+                    clockTime: document.getElementById('clock-time'),
+                    clockDate: document.getElementById('clock-date'),
+                    // Music Player
+                    audioPlayer: document.getElementById('audio-player'),
+                    albumArt: document.getElementById('player-album-art'),
+                    trackTitle: document.getElementById('player-track-title'),
+                    trackArtist: document.getElementById('player-track-artist'),
+                    progressContainer: document.getElementById('player-progress-container'),
+                    progressBar: document.getElementById('player-progress-bar'),
+                    playPauseBtn: document.getElementById('player-play-pause-btn'),
+                    playIcon: document.getElementById('player-play-icon'),
+                    pauseIcon: document.getElementById('player-pause-icon'),
+                    prevBtn: document.getElementById('player-prev-btn'),
+                    nextBtn: document.getElementById('player-next-btn'),
+                    // Gallery
+                    galleryGrid: document.getElementById('gallery-grid'),
+                    lightbox: document.getElementById('lightbox'),
+                    lightboxImg: document.getElementById('lightbox-img'),
+                };
+            },
 
-                // Gallery
-                galleryGrid: document.getElementById('gallery-grid'),
-                lightbox: document.querySelector('.lightbox'),
-                lightboxImg: document.querySelector('.lightbox img'),
-                // Clock
-                clockTime: document.getElementById('clock-time'),
-                clockDate: document.getElementById('clock-date'),
-            };
-        },
-
-        bindEvents() {
-            // Cursor
-            document.addEventListener('mousemove', e => {
-                this.state.cursor.x = e.clientX;
-                this.state.cursor.y = e.clientY;
-            });
-            
-            document.body.addEventListener('mouseover', e => this.updateHoverState(e));
-
-            // Navigation
-            this.elements.navButtons.forEach(button => {
-                button.addEventListener('click', () => this.switchSection(button.dataset.section));
-            });
-            
-            // Music Player (Desktop)
-            this.elements.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
-            this.elements.nextBtn.addEventListener('click', () => this.playNextTrack());
-            this.elements.prevBtn.addEventListener('click', () => this.playPrevTrack());
-            this.elements.progressContainer.addEventListener('click', e => this.seek(e));
-
-            // Music Player (Mobile)
-            this.elements.playPauseBtnMobile.addEventListener('click', () => this.togglePlayPause());
-            this.elements.nextBtnMobile.addEventListener('click', () => this.playNextTrack());
-            this.elements.prevBtnMobile.addEventListener('click', () => this.playPrevTrack());
-            this.elements.progressContainerMobile.addEventListener('click', e => this.seek(e));
-
-            // Global Audio Events
-            this.elements.audioPlayer.addEventListener('timeupdate', () => this.updateMusicProgress());
-            this.elements.audioPlayer.addEventListener('ended', () => this.playNextTrack());
-
-            // Gallery
-            this.elements.lightbox.addEventListener('click', () => this.hideLightbox());
-        },
-        
-        updateHoverState(e) {
-             if (e.target instanceof HTMLElement) {
-                 const isHoverable = e.target.closest('a, button, .playlist-item, .gallery-item, .progress-container, .progress-container-mobile');
-                 this.state.isHovering = !!isHoverable;
-             }
-        },
-
-        startCursor() {
-            const update = () => {
-                const { x, y } = this.state.cursor;
-                this.elements.cursorDot.style.transform = `translate(${x - 4}px, ${y - 4}px)`;
-                const outlineScale = this.state.isHovering ? 'scale(1.5)' : 'scale(1)';
-                this.elements.cursorOutline.style.transform = `translate(${x - 20}px, ${y - 20}px) ${outlineScale}`;
-                requestAnimationFrame(update);
-            };
-            requestAnimationFrame(update);
-        },
-
-        switchSection(sectionId) {
-            if (sectionId === this.state.activeSection) return;
-
-            this.state.activeSection = sectionId;
-
-            this.elements.navButtons.forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.section === sectionId);
-            });
-
-            this.elements.contentPanels.forEach(panel => {
-                panel.classList.toggle('active', panel.id === `${sectionId}-panel`);
-            });
-        },
-        
-        startClock() {
-            const update = () => {
-                const now = new Date();
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                this.elements.clockTime.textContent = `${hours}:${minutes}`;
-                this.elements.clockDate.textContent = now.toLocaleDateString('en-US', {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+            bindEvents() {
+                this.elements.navButtons.forEach(btn => {
+                    btn.addEventListener('click', () => this.updateView(btn.dataset.view));
                 });
-            };
-            update();
-            setInterval(update, 1000);
-        },
-        
-        renderGallery() {
-            this.elements.galleryGrid.innerHTML = this.constants.images.map((src, index) => `
-                <div class="gallery-item" data-src="${src}">
-                    <img src="${src}" alt="Gallery image ${index + 1}" loading="lazy">
-                </div>
-            `).join('');
+                
+                // Music Player
+                this.elements.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+                this.elements.nextBtn.addEventListener('click', () => this.playNextTrack());
+                this.elements.prevBtn.addEventListener('click', () => this.playPrevTrack());
+                this.elements.audioPlayer.addEventListener('timeupdate', () => this.updateMusicProgress());
+                this.elements.audioPlayer.addEventListener('ended', () => this.playNextTrack());
+
+                // Enhanced Seeking
+                this.elements.progressContainer.addEventListener('mousedown', (e) => {
+                    this.state.isSeeking = true;
+                    this.seek(e);
+                });
+                window.addEventListener('mousemove', (e) => {
+                    if (this.state.isSeeking) {
+                        this.seek(e);
+                    }
+                });
+                window.addEventListener('mouseup', () => {
+                    this.state.isSeeking = false;
+                });
+
+
+                // Lightbox
+                this.elements.lightbox.addEventListener('click', () => this.hideLightbox());
+                this.elements.lightboxImg.addEventListener('click', (e) => e.stopPropagation());
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.hideLightbox();
+                });
+            },
+
+            // --- VIEW MANAGEMENT ---
+            updateView(newView, isInstant = false) {
+                if (!newView || newView === this.state.activeView && !isInstant) return;
             
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                item.addEventListener('click', () => this.showLightbox(item.dataset.src));
-            });
-        },
-
-        showLightbox(src) {
-            this.elements.lightboxImg.src = src;
-            this.elements.lightbox.classList.add('visible');
-        },
-
-        hideLightbox() {
-            this.elements.lightbox.classList.remove('visible');
-        },
-
-        loadTrack(index) {
-            const track = this.constants.tracks[index];
-            this.elements.audioPlayer.src = track.url;
+                const oldViewIndex = this.constants.viewOrder[this.state.activeView];
+                const newViewIndex = this.constants.viewOrder[newView];
+                this.state.activeView = newView;
             
-            // Update both desktop and mobile views
-            this.elements.trackTitle.textContent = track.title;
-            this.elements.trackArtist.textContent = track.artist;
-            this.elements.albumArt.src = track.art;
+                this.elements.pages.forEach(page => {
+                    const pageViewIndex = this.constants.viewOrder[page.dataset.view];
+                    const offset = pageViewIndex - newViewIndex;
+                    const isActive = offset === 0;
             
-            this.elements.trackTitleMobile.textContent = track.title;
-            this.elements.trackArtistMobile.textContent = track.artist;
-            this.elements.albumArtMobile.src = track.art;
-
-            this.updatePlaylistUI();
-        },
-
-        renderPlaylist() {
-            const playlistHTML = this.constants.tracks.map((track, index) => `
-                <li class="playlist-item" data-index="${index}">
-                    <span class="playlist-index">${(index + 1).toString().padStart(2, '0')}</span>
-                    <div>
-                        <p style="font-weight: 600;">${track.title}</p>
-                        <p style="font-size: 0.875rem; color: var(--text-muted);">${track.artist}</p>
-                    </div>
-                </li>
-            `).join('');
+                    if (isInstant) {
+                        page.style.transition = 'none';
+                    } else {
+                        page.style.transition = '';
+                    }
             
-            this.elements.playlist.innerHTML = playlistHTML;
-            this.elements.playlistMobile.innerHTML = playlistHTML;
-
-            const handleItemClick = (e) => {
-                const item = e.target.closest('.playlist-item');
-                if (item) {
-                    const index = parseInt(item.dataset.index, 10);
-                    this.state.currentTrackIndex = index;
-                    this.loadTrack(index);
-                    this.playTrack();
+                    page.style.transform = `translateX(${offset * 100}%)`;
+                    page.style.opacity = isActive ? '1' : '0';
+                    page.style.pointerEvents = isActive ? 'auto' : 'none';
+                    page.style.zIndex = isActive ? '10' : '0';
+                });
+            
+                // Update nav buttons
+                this.elements.navButtons.forEach(btn => {
+                    const isActive = btn.dataset.view === newView;
+                    btn.classList.toggle('text-pola-text', isActive);
+                    btn.classList.toggle('text-pola-text-muted', !isActive);
+                    btn.querySelector('.nav-indicator').classList.toggle('opacity-100', isActive);
+                    btn.querySelector('.nav-indicator').classList.toggle('opacity-0', !isActive);
+                });
+            
+                if (isInstant) {
+                    setTimeout(() => {
+                        this.elements.pages.forEach(page => page.style.transition = '');
+                    }, 50);
                 }
-            };
+            },
             
-            this.elements.playlist.addEventListener('click', handleItemClick);
-            this.elements.playlistMobile.addEventListener('click', handleItemClick);
-        },
-        
-        updatePlaylistUI() {
-            document.querySelectorAll('.playlist-item').forEach(item => {
-                item.classList.toggle('active', parseInt(item.dataset.index, 10) === this.state.currentTrackIndex);
-            });
-        },
+            // --- CORE FEATURES ---
+            startClock() {
+                const update = () => {
+                    const now = new Date();
+                    this.elements.clockTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+                    this.elements.clockDate.textContent = now.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+                };
+                update();
+                setInterval(update, 1000);
+            },
 
-        togglePlayPause() {
-            this.state.isPlaying ? this.pauseTrack() : this.playTrack();
-        },
+            renderGallery() {
+                this.elements.galleryGrid.innerHTML = this.constants.images.map((src, index) => `
+                    <div class="aspect-square bg-pola-bg rounded-lg overflow-hidden cursor-pointer group" data-src="${src}">
+                        <img src="${src}" alt="Gallery image ${index + 1}" loading="lazy" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
+                    </div>
+                `).join('');
 
-        playTrack() {
-            this.state.isPlaying = true;
-            this.elements.audioPlayer.play().catch(e => console.error("Audio playback failed:", e));
-            // Desktop
-            this.elements.playIcon.style.display = 'none';
-            this.elements.pauseIcon.style.display = 'block';
-            // Mobile
-            this.elements.playIconMobile.style.display = 'none';
-            this.elements.pauseIconMobile.style.display = 'block';
-        },
+                this.elements.galleryGrid.querySelectorAll('.group').forEach(item => {
+                    item.addEventListener('click', () => this.showLightbox(item.dataset.src));
+                });
+            },
 
-        pauseTrack() {
-            this.state.isPlaying = false;
-            this.elements.audioPlayer.pause();
-            // Desktop
-            this.elements.playIcon.style.display = 'block';
-            this.elements.pauseIcon.style.display = 'none';
-            // Mobile
-            this.elements.playIconMobile.style.display = 'block';
-            this.elements.pauseIconMobile.style.display = 'none';
-        },
+            showLightbox(src) {
+                if (!src) return;
+                this.elements.lightboxImg.src = src;
+                this.elements.lightbox.classList.remove('hidden');
+                this.elements.lightbox.classList.add('animate-fade-in');
+            },
 
-        playNextTrack() {
-            this.state.currentTrackIndex = (this.state.currentTrackIndex + 1) % this.constants.tracks.length;
-            this.loadTrack(this.state.currentTrackIndex);
-            if(this.state.isPlaying) this.playTrack();
-        },
+            hideLightbox() {
+                this.elements.lightbox.classList.add('hidden');
+                this.elements.lightbox.classList.remove('animate-fade-in');
+                this.elements.lightboxImg.src = '';
+            },
 
-        playPrevTrack() {
-            this.state.currentTrackIndex = (this.state.currentTrackIndex - 1 + this.constants.tracks.length) % this.constants.tracks.length;
-            this.loadTrack(this.state.currentTrackIndex);
-            if(this.state.isPlaying) this.playTrack();
-        },
+            loadTrack(index, autoplay) {
+                const track = this.constants.tracks[index];
+                this.state.currentTrackIndex = index;
+                this.elements.audioPlayer.src = track.url;
+                this.elements.trackTitle.textContent = track.title;
+                this.elements.trackArtist.textContent = track.artist;
+                this.elements.albumArt.src = track.art || this.constants.defaultArt;
 
-        updateMusicProgress() {
-            const { duration, currentTime } = this.elements.audioPlayer;
-            const progressPercent = (currentTime / duration) * 100;
-            const width = `${progressPercent || 0}%`;
-            this.elements.progressBar.style.width = width;
-            this.elements.progressBarMobile.style.width = width;
-        },
+                if (autoplay) {
+                    this.playTrack();
+                } else {
+                    this.pauseTrack();
+                }
+            },
 
-        seek(e) {
-            const container = e.target.closest('.progress-container, .progress-container-mobile');
-            if (!container) return;
-            const width = container.clientWidth;
-            const clickX = e.offsetX;
-            const duration = this.elements.audioPlayer.duration;
-            if (duration) {
-                this.elements.audioPlayer.currentTime = (clickX / width) * duration;
-            }
-        }
-    };
+            togglePlayPause() {
+                this.state.isPlaying ? this.pauseTrack() : this.playTrack();
+            },
 
-    document.addEventListener('DOMContentLoaded', () => App.init());
+            playTrack() {
+                this.elements.audioPlayer.play().then(() => {
+                    this.state.isPlaying = true;
+                    this.elements.playIcon.classList.add('hidden');
+                    this.elements.pauseIcon.classList.remove('hidden');
+                }).catch(e => console.error("Playback error:", e));
+            },
+
+            pauseTrack() {
+                this.elements.audioPlayer.pause();
+                this.state.isPlaying = false;
+                this.elements.playIcon.classList.remove('hidden');
+                this.elements.pauseIcon.classList.add('hidden');
+            },
+
+            playNextTrack() {
+                const newIndex = (this.state.currentTrackIndex + 1) % this.constants.tracks.length;
+                this.loadTrack(newIndex, true);
+            },
+
+            playPrevTrack() {
+                const newIndex = (this.state.currentTrackIndex - 1 + this.constants.tracks.length) % this.constants.tracks.length;
+                this.loadTrack(newIndex, this.state.isPlaying);
+            },
+
+            updateMusicProgress() {
+                const { duration, currentTime } = this.elements.audioPlayer;
+                const progressPercent = duration ? (currentTime / duration) * 100 : 0;
+                // Only update progress bar if user is not actively seeking
+                if (!this.state.isSeeking) {
+                    this.elements.progressBar.style.width = `${progressPercent}%`;
+                }
+            },
+
+            seek(e) {
+                const { duration } = this.elements.audioPlayer;
+                if (!duration) return;
+                const rect = this.elements.progressContainer.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+                this.elements.audioPlayer.currentTime = percentage * duration;
+                this.elements.progressBar.style.width = `${percentage * 100}%`;
+            },
+        };
+
+        PolaApp.init();
+    });
     </script>
 </body>
 </html>
